@@ -1,0 +1,9 @@
+<!-- Sales Trend Chart -->
+<div class="bg-white p-6 rounded-2xl shadow mb-8">
+  <h2 class="text-lg font-bold mb-4">Sales Trend</h2>
+  <canvas baseChart 
+          [data]="salesChartData" 
+          [options]="salesChartOptions"
+          chartType="line">
+  </canvas>
+</div>

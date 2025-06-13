@@ -1,0 +1,16 @@
+<div class="min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-800 text-white">
+    <div class="p-4 text-lg font-bold">E-Commerce</div>
+    <nav class="mt-4 space-y-2">
+      <a routerLink="/dashboard" class="block px-4 py-2 hover:bg-gray-700">Dashboard</a>
+      <a routerLink="/dashboard/products" class="block px-4 py-2 hover:bg-gray-700">Products</a>
+      <a routerLink="/dashboard/orders" class="block px-4 py-2 hover:bg-gray-700">Orders</a>
+    </nav>
+  </aside>
+
+  <!-- Content -->
+  <main class="flex-1 p-6 bg-gray-100">
+    <router-outlet></router-outlet>
+  </main>
+</div>
