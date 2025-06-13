@@ -6,6 +6,8 @@
 /frontend/.angular/
 /frontend/.env
 /frontend/package-lock.json
+/frontend/.output/
+/frontend/.turbo/
 
 # ====================
 # ASP.NET Core Backend
@@ -17,6 +19,15 @@
 **/*.suo
 **/*.db
 **/appsettings.*.json
+**/launchSettings.json
+
+# ====================
+# IDE/Editor Settings
+# ====================
+.vscode/
+*.suo
+*.userosscache
+*.sln.docstates
 
 # ====================
 # System / OS
@@ -25,13 +36,13 @@
 Thumbs.db
 
 # ====================
-# Logs & Build
+# Logs & Build Metadata
 # ====================
 *.log
 *.tsbuildinfo
 
 # ====================
-# Others
+# Temporary & Swap Files
 # ====================
 *.swp
 *.tmp
