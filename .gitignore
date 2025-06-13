@@ -1,0 +1,37 @@
+# ====================
+# Angular Frontend
+# ====================
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/
+/frontend/.env
+/frontend/package-lock.json
+
+# ====================
+# ASP.NET Core Backend
+# ====================
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.suo
+**/*.db
+**/appsettings.*.json
+
+# ====================
+# System / OS
+# ====================
+.DS_Store
+Thumbs.db
+
+# ====================
+# Logs & Build
+# ====================
+*.log
+*.tsbuildinfo
+
+# ====================
+# Others
+# ====================
+*.swp
+*.tmp
