@@ -5,7 +5,7 @@ namespace Ecommerce.API.Services;
 
 public interface IProductService
 {
-    Task<List<ProductDto>> GetAllProductsAsync(CancellationToken cancellationToken = default);
+    Task<List<ProductDto>> GetAllProductsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken = default);
     Task<ProductDto?> GetProductByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<ProductDto> CreateProductAsync(ProductDto product, CancellationToken cancellationToken = default);
     Task<bool> UpdateProductAsync(int id, ProductDto product, CancellationToken cancellationToken = default);

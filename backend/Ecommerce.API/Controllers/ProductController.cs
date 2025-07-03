@@ -14,7 +14,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     [HttpGet("get-all-products")]
     public async Task<IActionResult> GetAllProductsAsync()
     {
-        List<ProductDto> products = await productService.GetAllProductsAsync();
+        List<ProductDto> products = await productService.GetAllProductsAsync(1, int.MaxValue);
         return Ok(products);
     }
 

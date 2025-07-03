@@ -7,10 +7,22 @@ namespace Ecommerce.API.Services;
 public class ProductService(AppDbContext context)
     : IProductService
 {
-    public async Task<List<ProductDto>> GetAllProductsAsync(CancellationToken cancellationToken)
+    public async Task<List<ProductDto>> GetAllProductsAsync(
+         int pageIndex = 1,
+         int pageSize = int.MaxValue,
+         CancellationToken cancellationToken = default
+    )
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(pageIndex, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
+
         return await context.Products
-            .Select(p => new ProductDto
+            .AsNoTracking()                  
+            .Where(p => p.Stock > 0)         
+            .OrderBy(p => p.Name)            
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new ProductDto      
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -19,10 +31,8 @@ public class ProductService(AppDbContext context)
                 Stock = p.Stock,
                 ImageUrl = p.ImageUrl
             })
-            .OrderBy(p => p.Name)
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
     }
-
     public async Task<ProductDto?> GetProductByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await context.Products
