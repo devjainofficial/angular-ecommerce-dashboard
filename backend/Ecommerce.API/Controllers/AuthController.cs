@@ -1,4 +1,5 @@
-﻿using Ecommerce.API.Models;
+﻿using Ecommerce.API.DTOs;
+using Ecommerce.API.Models;
 using Ecommerce.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace Ecommerce.API.Controllers;
 public class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterDto request)
     {
         AuthResult result = await authService.RegisterAsync(request);
 
@@ -20,7 +21,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> Login(LoginDto request)
     {
         AuthResult result = await authService.LoginAsync(request);
 

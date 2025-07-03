@@ -10,7 +10,7 @@ namespace Ecommerce.API.Services;
 
 public class AuthService(AppDbContext context, IConfiguration configuration) : IAuthService
 {
-    public async Task<AuthResult> RegisterAsync(RegisterRequest registerDto)
+    public async Task<AuthResult> RegisterAsync(RegisterDto registerDto)
     {
         AppUser? existingUser = await context.Users
             .FirstOrDefaultAsync(u => u.Email == registerDto.Email);
@@ -36,7 +36,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         return AuthResult.Success(token);
     }
 
-    public async Task<AuthResult> LoginAsync(LoginRequest loginDto)
+    public async Task<AuthResult> LoginAsync(LoginDto loginDto)
     {
         AppUser? user = await context.Users
             .FirstOrDefaultAsync(u => u.Email == loginDto.Email);

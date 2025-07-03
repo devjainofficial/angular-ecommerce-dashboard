@@ -1,5 +1,11 @@
- <main>
-      <section class="content">
-        <router-outlet></router-outlet>
-      </section>
-</main>
+<ng-container *ngIf="!isAuthRoute()">
+  <div class="flex">
+    <app-sidebar></app-sidebar>
+    <main class="flex-1 p-8 bg-gray-100 min-h-screen transition-all duration-300 md:ml-60">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</ng-container>
+<ng-container *ngIf="isAuthRoute()">
+  <router-outlet></router-outlet>
+</ng-container>
