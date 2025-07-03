@@ -19,6 +19,7 @@ public class ProductService(AppDbContext context)
                 Stock = p.Stock,
                 ImageUrl = p.ImageUrl
             })
+            .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
@@ -40,7 +41,7 @@ public class ProductService(AppDbContext context)
 
     public async Task<ProductDto> CreateProductAsync(ProductDto request, CancellationToken cancellationToken)
     {
-        var product = new Product
+        Product product = new()
         {
             Name = request.Name,
             Description = request.Description,
@@ -49,7 +50,9 @@ public class ProductService(AppDbContext context)
             ImageUrl = request.ImageUrl,
             CreatedAt = DateTime.UtcNow,
         };
+
         context.Products.Add(product);
+        
         await context.SaveChangesAsync(cancellationToken);
 
         return new ProductDto
@@ -65,8 +68,9 @@ public class ProductService(AppDbContext context)
 
     public async Task<bool> UpdateProductAsync(int id, ProductDto request, CancellationToken cancellationToken)
     {
-        var product = await context.Products.FindAsync([id], cancellationToken: cancellationToken);
-        if (product == null) return false;
+        Product? product = await context.Products.FindAsync([id], cancellationToken: cancellationToken);
+        
+        if (product is null) return false;
 
         product.Name = request.Name;
         product.Description = request.Description;
@@ -76,16 +80,20 @@ public class ProductService(AppDbContext context)
         product.UpdatedAt = DateTime.UtcNow;
 
         await context.SaveChangesAsync(cancellationToken);
+        
         return true;
     }
 
     public async Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken)
     {
         var product = await context.Products.FindAsync([id], cancellationToken: cancellationToken);
-        if (product == null) return false;
+        
+        if (product is null) return false;
 
         context.Products.Remove(product);
+        
         await context.SaveChangesAsync(cancellationToken);
+        
         return true;
     }
 }

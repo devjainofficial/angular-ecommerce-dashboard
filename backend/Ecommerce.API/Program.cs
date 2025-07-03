@@ -91,6 +91,16 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ecommerce API V1");
     });
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path == "/")
+        {
+            context.Response.Redirect("/swagger");
+            return;
+        }
+
+        await next();
+    });
 }
 
 app.UseHttpsRedirection();
