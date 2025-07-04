@@ -4,54 +4,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Services;
 
-public class ProductService(AppDbContext context)
-    : IProductService
+public class ProductService(AppDbContext context) : IProductService
 {
     public async Task<List<ProductDto>> GetAllProductsAsync(
-         int pageIndex = 1,
-         int pageSize = int.MaxValue,
-         CancellationToken cancellationToken = default
-    )
+        int pageIndex = 1,
+        int pageSize = int.MaxValue,
+        CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(pageIndex, 1);
         ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
 
-        return await context.Products
-            .AsNoTracking()                  
-            .Where(p => p.Stock > 0)         
-            .OrderBy(p => p.Name)            
+        IQueryable<Product>? query = context.Products
+            .AsNoTracking()
+            .Include(p => p.Variants)
+            .Where(p => p.Stock > 0 && p.DeletedAt == null)
+            .OrderBy(p => p.Name)
             .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .Select(p => new ProductDto      
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                Stock = p.Stock,
-                ImageUrl = p.ImageUrl
-            })
-            .ToListAsync(cancellationToken);
-    }
-    public async Task<ProductDto?> GetProductByIdAsync(int id, CancellationToken cancellationToken)
-    {
-        return await context.Products
-            .Where(p => p.Id == id)
-            .Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                Stock = p.Stock,
-                ImageUrl = p.ImageUrl
-            })
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            .Take(pageSize);
+
+        List<Product>? products = await query.ToListAsync(token);
+
+        return [.. products.Select(ToDto)];
     }
 
-    public async Task<ProductDto> CreateProductAsync(ProductDto request, CancellationToken cancellationToken)
+
+    public async Task<ProductDto?> GetProductByIdAsync(int id, CancellationToken token = default)
     {
-        Product product = new()
+        return await context.Products
+            .AsNoTracking()
+            .Include(p => p.Variants)
+            .Where(p => p.Id == id && p.DeletedAt == null)
+            .Select(p => ToDto(p))
+            .FirstOrDefaultAsync(token);
+    }
+
+    public async Task<ProductDto> CreateProductAsync(ProductDto request, CancellationToken token = default)
+    {
+        Product? product = new()
         {
             Name = request.Name,
             Description = request.Description,
@@ -59,27 +48,21 @@ public class ProductService(AppDbContext context)
             Stock = request.Stock,
             ImageUrl = request.ImageUrl,
             CreatedAt = DateTime.UtcNow,
+            Variants = request.Variants?.Select(ToEntity).ToList() ?? []
         };
 
         context.Products.Add(product);
-        
-        await context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(token);
 
-        return new ProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            Stock = product.Stock,
-            ImageUrl = product.ImageUrl
-        };
+        return ToDto(product);
     }
 
-    public async Task<bool> UpdateProductAsync(int id, ProductDto request, CancellationToken cancellationToken)
+    public async Task<bool> UpdateProductAsync(int id, ProductDto request, CancellationToken token = default)
     {
-        Product? product = await context.Products.FindAsync([id], cancellationToken: cancellationToken);
-        
+        Product? product = await context.Products
+                                   .Include(p => p.Variants)
+                                   .FirstOrDefaultAsync(p => p.Id == id, token);
+
         if (product is null) return false;
 
         product.Name = request.Name;
@@ -89,21 +72,53 @@ public class ProductService(AppDbContext context)
         product.ImageUrl = request.ImageUrl;
         product.UpdatedAt = DateTime.UtcNow;
 
-        await context.SaveChangesAsync(cancellationToken);
-        
+        product.Variants.Clear();
+
+        if (request.Variants != null)
+        {
+            foreach (var v in request.Variants)
+                product.Variants.Add(ToEntity(v));
+        }
+
+        await context.SaveChangesAsync(token);
         return true;
     }
 
-    public async Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteProductAsync(int id, CancellationToken token = default)
     {
-        var product = await context.Products.FindAsync([id], cancellationToken: cancellationToken);
-        
+        Product? product = await context.Products.FindAsync([id], token);
+
         if (product is null) return false;
 
-        context.Products.Remove(product);
+        product.DeletedAt = DateTime.UtcNow;
         
-        await context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(token);
         
         return true;
     }
+
+    private static ProductDto ToDto(Product p) => new()
+    {
+        Id = p.Id,
+        Name = p.Name,
+        Description = p.Description,
+        Price = p.Price,
+        Stock = p.Stock,
+        ImageUrl = p.ImageUrl,
+        Variants = p.Variants?.Select(v => new ProductVariantDto
+        {
+            Size = v.Size,
+            Color = v.Color,
+            SKU = v.SKU,
+            PriceDiff = v.PriceDiff
+        }).ToList()
+    };
+
+    private static ProductVariant ToEntity(ProductVariantDto v) => new()
+    {
+        Size = v.Size,
+        Color = v.Color,
+        SKU = v.SKU,
+        PriceDiff = v.PriceDiff
+    };
 }

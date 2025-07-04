@@ -1,3 +1,10 @@
+export interface ProductVariant {
+    size?: string;
+    color?: string;
+    sku?: string;
+    priceDiff?: number;
+}
+
 export interface Product{
     id?: number;
     name: string;
@@ -5,4 +12,5 @@ export interface Product{
     price: number;
     imageUrl: string;
     stock: number;
+    variants?: ProductVariant[];
 }   

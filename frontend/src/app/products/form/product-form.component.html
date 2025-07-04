@@ -42,6 +42,26 @@
         <span *ngIf="form.get('imageUrl')?.errors?.['pattern']">Please enter a valid URL.</span>
       </div>
     </div>
+
+    <!-- Variants Section -->
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label class="block font-semibold text-gray-700">Variants</label>
+        <button type="button" (click)="addVariant()" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm">+ Add Variant</button>
+      </div>
+      <div *ngFor="let variantCtrl of variantFormGroups; let i = index" [formGroup]="variantCtrl" class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2 items-end">
+        <input formControlName="size" placeholder="Size" class="p-2 border rounded" />
+        <input formControlName="color" placeholder="Color" class="p-2 border rounded" />
+        <input formControlName="sku" placeholder="SKU" class="p-2 border rounded" />
+        <input type="number" formControlName="priceDiff" placeholder="Price Diff" class="p-2 border rounded" />
+        <button type="button" (click)="removeVariant(i)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs ml-2">Remove</button>
+        <div *ngIf="variantCtrl.get('sku')?.touched && variantCtrl.get('sku')?.invalid" class="col-span-4 text-red-500 text-xs mt-1">
+          <span *ngIf="variantCtrl.get('sku')?.errors?.['required']">SKU is required.</span>
+        </div>
+      </div>
+      <div *ngIf="variants.length === 0" class="text-gray-400 text-sm">No variants added.</div>
+    </div>
+
     <div *ngIf="form.value.imageUrl" class="flex justify-center mb-4">
       <img [src]="form.value.imageUrl" alt="Product Image" class="h-32 rounded shadow border" />
     </div>
