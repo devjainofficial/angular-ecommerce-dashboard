@@ -1,0 +1,43 @@
+<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg mt-10">
+  <h2 class="text-2xl font-bold mb-4">Cart</h2>
+  <div *ngIf="(cart$ | async) as cart; else empty">
+    <div *ngFor="let item of cart" class="flex items-center justify-between border-b py-2">
+      <div>
+        <div class="font-semibold">{{ item.product.name }}</div>
+        <div *ngIf="item.variant" class="text-xs text-gray-500">
+          <span *ngIf="item.variant.size">Size: {{ item.variant.size }}</span>
+          <span *ngIf="item.variant.color">Color: {{ item.variant.color }}</span>
+          <span *ngIf="item.variant.sku">SKU: {{ item.variant.sku }}</span>
+        </div>
+        <div class="text-sm text-gray-600">${{ item.product.price }} x {{ item.quantity }}</div>
+      </div>
+      <button (click)="remove(item)" class="text-red-500 hover:underline">Remove</button>
+    </div>
+    <div class="mt-4 flex justify-between items-center">
+      <div class="font-bold">Total:</div>
+      <div class="text-xl font-bold text-blue-700">
+        ${{ getTotal(cart) }}
+      </div>    
+    </div>
+    <button (click)="clear()" class="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Clear Cart</button>
+    <button (click)="showCheckout = true" class="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
+    <div *ngIf="showCheckout" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+      <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+        <div class="mb-6 text-lg text-gray-800">Proceed to checkout?</div>
+        <div class="flex justify-end gap-4">
+          <button (click)="showCheckout = false" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
+          <button (click)="checkout()" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="checkoutSuccess" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+      <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
+        <div class="mb-6 text-lg text-green-700 font-bold">Checkout successful!</div>
+        <button (click)="checkoutSuccess = false" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">OK</button>
+      </div>
+    </div>
+  </div>
+  <ng-template #empty>
+    <div class="text-gray-400 text-center py-8">Your cart is empty.</div>
+  </ng-template>
+</div> 

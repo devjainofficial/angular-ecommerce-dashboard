@@ -14,5 +14,7 @@
             class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Edit</button>
         <button (click)="$event.preventDefault(); delete.emit(product.id)"
             class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">Delete</button>
+        <button (click)="addToCart(); $event.preventDefault();"
+            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">Add to Cart</button>
     </div>
 </div>

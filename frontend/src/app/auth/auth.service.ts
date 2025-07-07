@@ -21,15 +21,26 @@ export class AuthService {
   }
 
   saveToken(token: string): void{
+    const now = new Date();
+    const expiry = now.getTime() + 24 * 60 * 60 * 1000;
     localStorage.setItem('authToken', token);
+    localStorage.setItem('authTokenExpiry', expiry.toString());
   }
 
   getToken(): string | null{
-    return localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
+    const expiry = localStorage.getItem('authTokenExpiry');
+    if (!token || !expiry) return null;
+    if (Date.now() > Number(expiry)) {
+      this.logout();
+      return null;
+    }
+    return token;
   }
 
   logout(){
     localStorage.removeItem('authToken');
+    localStorage.removeItem('authTokenExpiry');
     this.router.navigate(['/login']);
   }
 }

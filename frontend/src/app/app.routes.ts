@@ -4,6 +4,7 @@ import { Register } from './auth/register/register';
 import { Overview } from './dashboard/overview/overview';
 import { AuthGuard } from './auth/auth.guard';
 import { Layout } from './dashboard/layout/layout';
+import { CartComponent } from './products/cart/cart.component';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -18,6 +19,7 @@ export const routes: Routes = [
         component: Layout,
         children: [
           { path: '', component: Overview },
+          { path: 'cart', component: CartComponent },
         ]
       },
       {

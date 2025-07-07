@@ -76,7 +76,7 @@ export class ProductFormComponent implements OnInit {
       price: this.form.value.price ?? 0,
       stock: this.form.value.stock ?? 0,
       imageUrl: this.form.value.imageUrl ?? '',
-      variants: this.form.value.variants as any // cast to ProductVariant[]
+      variants: this.form.value.variants as any 
     };
     
     let save: Observable<any>;
