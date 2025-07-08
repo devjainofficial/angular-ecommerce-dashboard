@@ -13,9 +13,9 @@ namespace Ecommerce.API.Controllers
         {
             var summary = new DashboardSummaryDto
             {
-                TotalSales = 23300,
-                TotalOrders = 345,
-                TotalProducts = context.Products.Count(),
+                TotalSales = context.OrderItems.Sum(oi => oi.PriceAtOrder), 
+                TotalOrders = context.Orders.Count(),
+                TotalProducts = context.Products.Where(p => p.DeletedAt == null).Count(),
                 TotalCustomers = context.Users.Count()
             };
             return Ok(summary);

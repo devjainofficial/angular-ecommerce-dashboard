@@ -3,13 +3,15 @@ import { CommonModule } from "@angular/common";
 import { Router, RouterLink } from "@angular/router";
 import { ProductService } from "../product.service";
 import { Product } from "../product.model";
-import { ProductCardComponent } from './product-card.component';
 import { ProductFilterComponent } from './product-filter.component';
 import { ModalComponent } from './product-delete-modal.component';
 import { ToastService } from '../../shared/toast.service';
 import { Subject } from 'rxjs';
 import { debounceTime, delay } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../auth/auth.service';
+import { CartService } from '../cart/cart.service';
+import { ProductCardComponent } from './product-card.component';
 
 @Component({
     selector: 'product-list',
@@ -22,6 +24,8 @@ export class ProductListComponent implements OnInit{
     private api = inject(ProductService);
     private router = inject(Router);
     private toast = inject(ToastService);
+    private auth = inject(AuthService);
+    private cartService = inject(CartService);
     
     products: Product[] = [];
     pageIndex = 1;
@@ -32,9 +36,11 @@ export class ProductListComponent implements OnInit{
     productToDelete: Product | null = null;
     private searchSubject = new Subject<string>();
     loading = false;
+    isAdmin = false;
 
 
-    ngOnInit() { 
+    ngOnInit() {
+        this.isAdmin = this.auth.getUserRole() === 'Admin';
         this.searchSubject.pipe(
             debounceTime(400)
         ).subscribe(value => {
@@ -121,5 +127,10 @@ export class ProductListComponent implements OnInit{
 
     onFilterChange(value: string) {
         this.searchSubject.next(value);
+    }
+
+    addToCart(product: Product) {
+        this.cartService.addToCart(product);
+        this.toast.showSuccess('Product added to cart!');
     }
 }

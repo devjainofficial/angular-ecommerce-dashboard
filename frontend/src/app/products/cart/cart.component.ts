@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CartService, CartItem } from './cart.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../../shared/toast.service';
+import { OrderService, OrderDto, OrderItemDto } from '../../orders/order.service';
 
 @Component({
   selector: 'app-cart',
@@ -13,7 +14,7 @@ import { ToastService } from '../../shared/toast.service';
 export class CartComponent {
   cart$: Observable<CartItem[]>;
 
-  constructor(private cartService: CartService, private toast: ToastService) {
+  constructor(private cartService: CartService, private toast: ToastService, private orderService: OrderService) {
     this.cart$ = this.cartService.cart$;
   }
 
@@ -33,9 +34,29 @@ export class CartComponent {
   checkoutSuccess = false;
 
   checkout() {
-    this.clear();
-    this.showCheckout = false;
-    this.checkoutSuccess = true;
-    this.toast.showSuccess('Checkout successful!');
+    this.cart$.subscribe(cart => {
+      if (cart.length === 0) {
+        this.toast.showError('Cart is empty!');
+        return;
+      }
+      const order: OrderDto = {
+        items: cart.map(item => ({
+          productId: item.product.id!,
+          variant: item.variant,
+          quantity: item.quantity
+        }))
+      };
+      this.orderService.placeOrder(order).subscribe({
+        next: () => {
+          this.clear();
+          this.showCheckout = false;
+          this.checkoutSuccess = true;
+          this.toast.showSuccess('Order placed successfully!');
+        },
+        error: () => {
+          this.toast.showError('Failed to place order.');
+        }
+      });
+    }).unsubscribe();
   }
 } 

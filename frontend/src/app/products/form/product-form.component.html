@@ -21,7 +21,7 @@
           class="w-full p-3 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
         <div *ngIf="form.get('price')?.touched && form.get('price')?.invalid" class="text-red-500 text-sm mt-1">
           <span *ngIf="form.get('price')?.errors?.['required']">Price is required.</span>
-          <span *ngIf="form.get('price')?.errors?.['min']">Price must be at least 0.</span>
+          <span *ngIf="form.get('price')?.errors?.['min']">Price must be at least 1.</span>
         </div>
       </div>
       <div>

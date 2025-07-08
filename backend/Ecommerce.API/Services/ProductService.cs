@@ -21,7 +21,7 @@ public class ProductService(AppDbContext context) : IProductService
         IQueryable<Product> query = context.Products
             .AsNoTracking()
             .Include(p => p.Variants)
-            .Where(p => p.Stock > 0 && p.DeletedAt == null);
+            .Where(p => p.DeletedAt == null);
 
         if (!string.IsNullOrWhiteSpace(search))
         {

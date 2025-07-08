@@ -13,6 +13,7 @@ export interface DashboardSummary {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   constructor(private http: HttpClient) {}
+  
   getSummary(): Observable<DashboardSummary> {
     return this.http.get<DashboardSummary>('https://localhost:44307/api/dashboard/summary');
   }

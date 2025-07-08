@@ -20,7 +20,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             return AuthResult.Failure("User already exists.");
         }
 
-        AppUser user = new ()
+        AppUser user = new()
         {
             FullName = registerDto.FullName,
             Email = registerDto.Email,
@@ -28,11 +28,22 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         };
 
         context.Users.Add(user);
-
         await context.SaveChangesAsync();
 
+        var defaultRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+        if (defaultRole != null)
+        {
+            var userRole = new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+            {
+                UserId = user.Id,
+                RoleId = defaultRole.Id
+            };
+            context.UserRoles.Add(userRole);
+            await context.SaveChangesAsync();
+        }
+
         string token = GenerateJwtToken(user);
-        
+
         return AuthResult.Success(token);
     }
 
@@ -53,18 +64,32 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
 
     private string GenerateJwtToken(AppUser user)
     {
-        JwtSecurityTokenHandler tokenHandler = new ();
+        JwtSecurityTokenHandler tokenHandler = new();
 
         byte[] key = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!);
 
-        SecurityTokenDescriptor tokenDescriptor = new ()
+        List<string?> roles = [.. context.UserRoles
+            .Where(ur => ur.UserId == user.Id)
+            .Join(context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)];
+
+        List<Claim> claims =
+        [
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.FullName),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
+        ];
+
+        foreach (var role in roles)
         {
-            Subject = new ClaimsIdentity(
-            [
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
-            ]),
+            if (!string.IsNullOrEmpty(role))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+        }
+
+        SecurityTokenDescriptor tokenDescriptor = new()
+        {
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(1),
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"],

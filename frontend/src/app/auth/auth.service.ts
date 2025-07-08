@@ -38,6 +38,29 @@ export class AuthService {
     return token;
   }
 
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  getUserName(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.unique_name ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+
   logout(){
     localStorage.removeItem('authToken');
     localStorage.removeItem('authTokenExpiry');

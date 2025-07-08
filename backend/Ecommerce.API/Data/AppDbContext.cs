@@ -9,6 +9,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
     public DbSet<ProductVariant> ProductVariants { get; set; }
 
+    public DbSet<Order> Orders { get; set; }
+
+    public DbSet<OrderItem> OrderItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -17,6 +21,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .HasMany(p => p.Variants)
             .WithOne(v => v.Product)
             .HasForeignKey(v => v.ProductId)
-            .OnDelete(DeleteBehavior.Cascade); // Delete variants with product
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

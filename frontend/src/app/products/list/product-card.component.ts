@@ -2,8 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Product } from '../product.model';
-import { CartService } from '../cart/cart.service';
-import { ToastService } from '../../shared/toast.service';
 
 @Component({
     selector: 'product-card',
@@ -13,13 +11,18 @@ import { ToastService } from '../../shared/toast.service';
   })
   export class ProductCardComponent {
     @Input() product!: Product;
+    @Input() isAdmin = false;
     @Output() delete = new EventEmitter<number>();
     @Output() edit = new EventEmitter<number>();
+    @Output() addToCart = new EventEmitter<Product>();
 
-    constructor(private cartService: CartService, private toast: ToastService) {}
-
-    addToCart() {
-      this.cartService.addToCart(this.product);
-      this.toast.showSuccess('Product added to cart!');
+    onAddToCart() {
+      this.addToCart.emit(this.product);
+    }
+    onEdit() {
+      this.edit.emit(this.product.id!);
+    }
+    onDelete() {
+      this.delete.emit(this.product.id!);
     }
   }

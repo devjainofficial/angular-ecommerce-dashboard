@@ -3,6 +3,7 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
 import { DashboardSummary, DashboardService } from '../dashboard.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-overview',
@@ -13,8 +14,15 @@ import { DashboardSummary, DashboardService } from '../dashboard.service';
 export class Overview {
   summary: DashboardSummary | null = null;
   dashboardService = inject(DashboardService);
+  auth = inject(AuthService)
+
+  role = this.auth.getUserRole();
+  username = this.auth.getUserName();
+  isAdmin = this.role === 'Admin';
 
   ngOnInit() {
-    this.dashboardService.getSummary().subscribe(data => this.summary = data);
+    if(this.isAdmin){
+      this.dashboardService.getSummary().subscribe(data => this.summary = data);
+    }
   }
 }

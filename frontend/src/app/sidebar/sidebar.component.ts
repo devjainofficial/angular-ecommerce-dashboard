@@ -60,6 +60,7 @@ export class SidebarComponent implements OnInit {
   open = false;
   isDesktop = false;
   cartCount$: Observable<number>;
+  isAdmin = false;
 
   constructor(private auth: AuthService, private cartService: CartService) {
     this.cartCount$ = this.cartService.cart$.pipe(
@@ -71,6 +72,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.updateSidebarState();
     window.addEventListener('resize', this.updateSidebarState.bind(this));
+    this.isAdmin = this.auth.getUserRole() === 'Admin';
   }
 
   updateSidebarState() {
