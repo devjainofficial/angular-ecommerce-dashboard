@@ -9,11 +9,12 @@ import { ModalComponent } from './product-delete-modal.component';
 import { ToastService } from '../../shared/toast.service';
 import { Subject } from 'rxjs';
 import { debounceTime, delay } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'product-list',
     standalone: true,
-    imports: [CommonModule, RouterLink, ProductCardComponent, ProductFilterComponent, ModalComponent],
+    imports: [CommonModule, FormsModule, RouterLink, ProductCardComponent, ProductFilterComponent, ModalComponent],
     templateUrl: './product-list.component.html'
 })
 
@@ -44,10 +45,13 @@ export class ProductListComponent implements OnInit{
         this.fetch();
     }
 
+    sortBy = 'name';
+    sortDir = 'asc';
+
     fetch() {
         this.loading = true;
-        this.api.getAllProductsPaginated(this.pageIndex, this.pageSize, this.filterText)
-        .pipe(delay(500))
+        this.api.getAllProductsPaginated(this.pageIndex, this.pageSize, this.filterText, this.sortBy, this.sortDir)
+        .pipe(delay(100))
         .subscribe({
             next: (p) => {
                 this.products = p;
@@ -58,6 +62,17 @@ export class ProductListComponent implements OnInit{
                 this.loading = false;
             }
         });
+    }
+
+    onSortChange(field: string) {
+        this.sortBy = field;
+        this.pageIndex = 1;
+        this.fetch();
+    }
+    onSortDirChange(dir: string) {
+        this.sortDir = dir;
+        this.pageIndex = 1;
+        this.fetch();
     }
 
     nextPage() {

@@ -13,11 +13,11 @@ export class ProductService{
         return this.http.get<Product[]>(`${this.base}/get-all-products`);
     }
 
-    getAllProductsPaginated(pageIndex: number, pageSize: number, search: string = ''): Observable<Product[]> {
+    getAllProductsPaginated(pageIndex: number, pageSize: number, search: string = '', sortBy: string = 'name', sortDir: string = 'asc'): Observable<Product[]> {
         let url = `${this.base}/get-all-products?pageIndex=${pageIndex}&pageSize=${pageSize}`;
-        if (search && search.trim()) {
-            url += `&search=${encodeURIComponent(search.trim())}`;
-        }
+        if (search && search.trim()) url += `&search=${encodeURIComponent(search.trim())}`;
+        if (sortBy) url += `&sortBy=${sortBy}`;
+        if (sortDir) url += `&sortDir=${sortDir}`;
         return this.http.get<Product[]>(url);
     }
 

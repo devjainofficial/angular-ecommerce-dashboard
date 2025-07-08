@@ -1,6 +1,16 @@
 <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
   <h1 class="text-2xl font-bold text-gray-800">Products</h1>
-
+  <div class="flex items-center gap-2">
+    <label for="sortBy" class="text-sm font-medium text-gray-700">Sort by:</label>
+    <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange(sortBy)" class="border rounded px-2 py-1">
+      <option value="name">Name</option>
+      <option value="price">Price</option>
+    </select>
+    <select [(ngModel)]="sortDir" (change)="onSortDirChange(sortDir)" class="border rounded px-2 py-1">
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+  </div>
   <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
     <div class="flex-1 sm:flex-none min-w-[12rem] max-w-xs">
       <product-filter

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
+import { DashboardSummary, DashboardService } from '../dashboard.service';
 
 @Component({
   selector: 'app-overview',
@@ -10,26 +11,10 @@ import { NgChartsModule } from 'ng2-charts';
   templateUrl: './overview.html',
 })
 export class Overview {
-  salesChartData: ChartData<'line'> = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [
-      {
-        label: 'Sales',
-        data: [5000, 7000, 6000, 8000, 9500],
-        fill: true,
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        tension: 0.3
-      }
-    ]
-  };
+  summary: DashboardSummary | null = null;
+  dashboardService = inject(DashboardService);
 
-  salesChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true
-      }
-    }
-  };
+  ngOnInit() {
+    this.dashboardService.getSummary().subscribe(data => this.summary = data);
+  }
 }

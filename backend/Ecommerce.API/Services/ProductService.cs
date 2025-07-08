@@ -1,6 +1,7 @@
 ﻿using Ecommerce.API.Data.Entities;
 using Ecommerce.API.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace Ecommerce.API.Services;
 
@@ -10,6 +11,8 @@ public class ProductService(AppDbContext context) : IProductService
          int pageIndex = 1,
          int pageSize = int.MaxValue,
          string? search = null,
+         string? sortBy = null,
+         string? sortDir = null,
          CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(pageIndex, 1);
@@ -30,9 +33,12 @@ public class ProductService(AppDbContext context) : IProductService
             );
         }
 
-        query = query.OrderBy(p => p.Name)
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize);
+        if (sortBy == "price")
+            query = sortDir == "desc" ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price);
+        else 
+            query = sortDir == "desc" ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name);
+
+        query = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
         List<Product> products = await query.ToListAsync(token);
 

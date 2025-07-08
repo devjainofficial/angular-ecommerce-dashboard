@@ -13,12 +13,14 @@ public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpGet("get-all-products")]
     public async Task<IActionResult> GetAllProductsAsync(
-      [FromQuery] int pageIndex = 1,
-      [FromQuery] int pageSize = int.MaxValue,
-      [FromQuery] string? search = null,
-      CancellationToken cancellationToken = default)
+    [FromQuery] int pageIndex = 1,
+    [FromQuery] int pageSize = int.MaxValue,
+    [FromQuery] string? search = null,
+    [FromQuery] string? sortBy = "name",
+    [FromQuery] string? sortDir = "asc",
+    CancellationToken cancellationToken = default)
     {
-        var products = await productService.GetAllProductsAsync(pageIndex, pageSize, search, cancellationToken);
+        var products = await productService.GetAllProductsAsync(pageIndex, pageSize, search, sortBy, sortDir, cancellationToken);
         return Ok(products);
     }
 
