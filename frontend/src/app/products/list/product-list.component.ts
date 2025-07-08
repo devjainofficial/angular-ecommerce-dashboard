@@ -37,6 +37,8 @@ export class ProductListComponent implements OnInit{
     private searchSubject = new Subject<string>();
     loading = false;
     isAdmin = false;
+    showSortBy = false;
+    showSortDir = false;
 
 
     ngOnInit() {

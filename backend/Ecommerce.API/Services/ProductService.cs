@@ -1,7 +1,6 @@
 ﻿using Ecommerce.API.Data.Entities;
 using Ecommerce.API.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace Ecommerce.API.Services;
 
