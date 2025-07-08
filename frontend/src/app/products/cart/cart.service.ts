@@ -17,13 +17,11 @@ export class CartService {
   cart$;
 
   constructor() {
-    // Load cart from localStorage or start with empty array
     const saved = localStorage.getItem(CART_STORAGE_KEY);
     const initialCart: CartItem[] = saved ? JSON.parse(saved) : [];
     this.cartSubject = new BehaviorSubject<CartItem[]>(initialCart);
     this.cart$ = this.cartSubject.asObservable();
 
-    // Subscribe to changes and persist to localStorage
     this.cart$.subscribe(cart => {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     });

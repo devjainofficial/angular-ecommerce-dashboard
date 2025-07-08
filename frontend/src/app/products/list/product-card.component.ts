@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Product } from '../product.model';
 import { CartService } from '../cart/cart.service';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
     selector: 'product-card',
@@ -15,9 +16,10 @@ import { CartService } from '../cart/cart.service';
     @Output() delete = new EventEmitter<number>();
     @Output() edit = new EventEmitter<number>();
 
-    constructor(private cartService: CartService) {}
+    constructor(private cartService: CartService, private toast: ToastService) {}
 
     addToCart() {
       this.cartService.addToCart(this.product);
+      this.toast.showSuccess('Product added to cart!');
     }
   }

@@ -12,9 +12,13 @@ namespace Ecommerce.API.Controllers;
 public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpGet("get-all-products")]
-    public async Task<IActionResult> GetAllProductsAsync()
+    public async Task<IActionResult> GetAllProductsAsync(
+      [FromQuery] int pageIndex = 1,
+      [FromQuery] int pageSize = int.MaxValue,
+      [FromQuery] string? search = null,
+      CancellationToken cancellationToken = default)
     {
-        List<ProductDto> products = await productService.GetAllProductsAsync(1, int.MaxValue);
+        var products = await productService.GetAllProductsAsync(pageIndex, pageSize, search, cancellationToken);
         return Ok(products);
     }
 

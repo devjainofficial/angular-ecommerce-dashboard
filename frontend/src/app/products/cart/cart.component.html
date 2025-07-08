@@ -3,7 +3,11 @@
   <div *ngIf="(cart$ | async) as cart; else empty">
     <div *ngFor="let item of cart" class="flex items-center justify-between border-b py-2">
       <div>
-        <div class="font-semibold">{{ item.product.name }}</div>
+        <div class="font-semibold">
+            <a href="/products/{{item.product.id}}/{{ item.product.name }}">
+                {{ item.product.name }}
+            </a>
+        </div>
         <div *ngIf="item.variant" class="text-xs text-gray-500">
           <span *ngIf="item.variant.size">Size: {{ item.variant.size }}</span>
           <span *ngIf="item.variant.color">Color: {{ item.variant.color }}</span>

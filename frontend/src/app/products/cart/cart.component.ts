@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService, CartItem } from './cart.service';
 import { Observable } from 'rxjs';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
   selector: 'app-cart',
@@ -12,7 +13,7 @@ import { Observable } from 'rxjs';
 export class CartComponent {
   cart$: Observable<CartItem[]>;
 
-  constructor(private cartService: CartService) {
+  constructor(private cartService: CartService, private toast: ToastService) {
     this.cart$ = this.cartService.cart$;
   }
 
@@ -35,5 +36,6 @@ export class CartComponent {
     this.clear();
     this.showCheckout = false;
     this.checkoutSuccess = true;
+    this.toast.showSuccess('Checkout successful!');
   }
 } 

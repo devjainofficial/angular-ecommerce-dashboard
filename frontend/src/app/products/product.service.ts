@@ -13,6 +13,14 @@ export class ProductService{
         return this.http.get<Product[]>(`${this.base}/get-all-products`);
     }
 
+    getAllProductsPaginated(pageIndex: number, pageSize: number, search: string = ''): Observable<Product[]> {
+        let url = `${this.base}/get-all-products?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+        if (search && search.trim()) {
+            url += `&search=${encodeURIComponent(search.trim())}`;
+        }
+        return this.http.get<Product[]>(url);
+    }
+
     getProductById(id: number): Observable<Product> {
         return this.http.get<Product>(`${this.base}/get-by-productId/${id}`);
     }

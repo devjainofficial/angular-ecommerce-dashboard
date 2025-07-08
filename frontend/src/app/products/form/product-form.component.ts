@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../product.service';
 import { Observable } from 'rxjs';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
   selector: 'app-product-form',
@@ -17,6 +18,7 @@ export class ProductFormComponent implements OnInit {
   private api = inject(ProductService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   id?: number;
   form = this.fb.group({
@@ -85,6 +87,14 @@ export class ProductFormComponent implements OnInit {
     } else {
       save = this.api.createProduct(product);
     }
-    save.subscribe(() => this.router.navigate(['/products']));
+    save.subscribe({
+      next: () => {
+        this.toast.showSuccess(this.id ? 'Product updated!' : 'Product created!');
+        this.router.navigate(['/products']);
+      },
+      error: () => {
+        this.toast.showError('Failed to save product.');
+      }
+    });
   }
 }

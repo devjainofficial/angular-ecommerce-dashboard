@@ -7,26 +7,37 @@ namespace Ecommerce.API.Services;
 public class ProductService(AppDbContext context) : IProductService
 {
     public async Task<List<ProductDto>> GetAllProductsAsync(
-        int pageIndex = 1,
-        int pageSize = int.MaxValue,
-        CancellationToken token = default)
+         int pageIndex = 1,
+         int pageSize = int.MaxValue,
+         string? search = null,
+         CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(pageIndex, 1);
         ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
 
-        IQueryable<Product>? query = context.Products
+        IQueryable<Product> query = context.Products
             .AsNoTracking()
             .Include(p => p.Variants)
-            .Where(p => p.Stock > 0 && p.DeletedAt == null)
-            .OrderBy(p => p.Name)
+            .Where(p => p.Stock > 0 && p.DeletedAt == null);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            string s = search.Trim().ToLower();
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(s) ||
+                p.Description.ToLower().Contains(s) ||
+                p.Price.ToString().ToLower().Contains(s)
+            );
+        }
+
+        query = query.OrderBy(p => p.Name)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize);
 
-        List<Product>? products = await query.ToListAsync(token);
+        List<Product> products = await query.ToListAsync(token);
 
         return [.. products.Select(ToDto)];
     }
-
 
     public async Task<ProductDto?> GetProductByIdAsync(int id, CancellationToken token = default)
     {

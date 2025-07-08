@@ -16,14 +16,27 @@
   </div>
 </div>
 
-<div *ngIf="filteredProducts.length; else empty">
+<div *ngIf="loading" class="flex justify-center items-center py-8">
+  <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  <span class="ml-3 text-blue-600 text-lg">Loading...</span>
+</div>
+
+<div *ngIf="products.length; else empty">
   <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
     <product-card
-      *ngFor="let product of filteredProducts"
+      *ngFor="let product of products"
       [product]="product"
       (edit)="edit($event)"
       (delete)="delete($event)">
     </product-card>
+  </div>
+  <div class="flex justify-center items-center gap-4 mt-8">
+    <button (click)="prevPage()" [disabled]="pageIndex === 1" class="px-4 py-2 rounded bg-gray-200 disabled:opacity-50">Previous</button>
+    <span>Page {{ pageIndex }}</span>
+    <button (click)="nextPage()" [disabled]="isLastPage" class="px-4 py-2 rounded bg-gray-200 disabled:opacity-50">Next</button>
   </div>
 </div>
 

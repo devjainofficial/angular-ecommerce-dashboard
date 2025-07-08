@@ -4,6 +4,7 @@ import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class Login {
   loginForm: FormGroup;
   error = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router){
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private toast: ToastService){
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -31,10 +32,11 @@ export class Login {
       this.authService.login(this.loginForm.value).subscribe({
         next: (res) => {
           this.authService.saveToken(res.token);
+          this.toast.showSuccess('Login successful!');
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          this.error = err.error.message || 'Invalid Credentials';
+          this.toast.showError(err.error.message || 'Invalid Credentials');
         }
       }) 
     }
